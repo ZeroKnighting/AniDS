@@ -406,7 +406,8 @@ class Equiformer_MD17_DeNS_VAE(torch.nn.Module):
                 L = L.transpose(-1, -2)
                 L = torch.linalg.inv(L)
                 if ai is not None:
-                    L = L * ai[data.noise_mask].mean().unsqueeze(-1).unsqueeze(-1).unsqueeze(-1) # make training more stable
+                    if data.noise_mask.sum()>0:
+                        L = L * ai[data.noise_mask].mean().unsqueeze(-1).unsqueeze(-1).unsqueeze(-1) # make training more stable
                 data.noise_vec = torch.bmm(L, standard_noise.unsqueeze(-1)).squeeze(-1) # supervised noise: L^{-T} * standard_noise
                 
                 kl_loss = self.cal_kl_loss(sigma, std,data.noise_mask)
