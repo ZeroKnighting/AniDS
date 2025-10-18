@@ -1,0 +1,5 @@
+__pycache__/
+/datasets/PCQM4MV2/
+/datasets/equiformer/md17/
+/experiments/
+/models/
