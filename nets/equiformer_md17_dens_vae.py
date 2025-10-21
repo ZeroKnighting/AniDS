@@ -91,6 +91,7 @@ class Equiformer_MD17_DeNS_VAE(torch.nn.Module):
         fix_encoder_parameters=True,
         kappa_target = 0.30,                  # 
         gamma_reg_w = 1.0,
+        scale_method = "batch_mean", # changes for different scaling methods need different settings of std
     ):
         self.kappa_target = kappa_target
         self.gamma_reg_w = gamma_reg_w
@@ -149,6 +150,7 @@ class Equiformer_MD17_DeNS_VAE(torch.nn.Module):
         self.scale = scale
         self.register_buffer('atomref', atomref)
         self.use_force_encoding = use_force_encoding
+        self.scale_method = scale_method
         
         self.irreps_node_attr   = o3.Irreps(temp_irreps_node_attr)
         self.irreps_node_input  = o3.Irreps(temp_irreps_in)
@@ -405,10 +407,22 @@ class Equiformer_MD17_DeNS_VAE(torch.nn.Module):
 
                 L = L.transpose(-1, -2)
                 L = torch.linalg.inv(L)
+                L_scaled = L.clone()
+                # make training more stable
                 if ai is not None:
-                    if data.noise_mask.sum()>0:
-                        L = L * ai[data.noise_mask].mean().unsqueeze(-1).unsqueeze(-1).unsqueeze(-1) # make training more stable
-                data.noise_vec = torch.bmm(L, standard_noise.unsqueeze(-1)).squeeze(-1) # supervised noise: L^{-T} * standard_noise
+                    if self.scale_method == "batch_mean":
+                        if data.noise_mask.sum()>0:
+                            batch = data.batch
+                            noise_batch = batch[data.noise_mask]
+                            noise_ai = ai[data.noise_mask]
+                            noise_ai_batch_mean = scatter(noise_ai, noise_batch, dim=0, reduce='mean')  # [B, 1]
+                            ai_expanded = noise_ai_batch_mean[noise_batch]
+                            L_scaled[data.noise_mask] = L[data.noise_mask] * ai_expanded.unsqueeze(-1)
+                    elif self.scale_method == "ai":
+                        L_scaled = L * ai.unsqueeze(-1)
+                    elif self.scale_method == "std":
+                        L_scaled = L * (std*std)
+                data.noise_vec = torch.bmm(L_scaled, standard_noise.unsqueeze(-1)).squeeze(-1) # supervised noise: L^{-T} * standard_noise
                 
                 kl_loss = self.cal_kl_loss(sigma, std,data.noise_mask)
                 sum_gamma_flat = sum_gamma.squeeze(-1)
