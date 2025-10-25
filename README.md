@@ -48,7 +48,7 @@ The dataset of MD17 will be automatically downloaded when running training.
 
 ### MD17
 
-1. We provide training scripts under [`scripts/train/md17/equiformer/equiformer_AniDS/finetune`](scripts/train/md17/equiformer/equiformer_AniDS/finetune).
+1. We provide training scripts under [`scripts/train/md17/equiformer/equiformer_AniDS/finetune`](scripts/train/md17/equiformer_AniDS/finetune).
 For example, we can train Equiformer for the molecule of `aspirin` by running:
 
     ```bash
