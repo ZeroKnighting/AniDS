@@ -60,3 +60,14 @@ For example, we can train Equiformer for the molecule of `aspirin` by running:
 ## Acknowledgement
 
 Our implementation is based on [PyTorch](https://pytorch.org/), [PyG](https://pytorch-geometric.readthedocs.io/en/latest/index.html), [e3nn](https://github.com/e3nn/e3nn), [timm](https://github.com/huggingface/pytorch-image-models), [ocp](https://github.com/Open-Catalyst-Project/ocp), [SEGNN](https://github.com/RobDHess/Steerable-E3-GNN), [TorchMD-NET](https://github.com/torchmd/torchmd-net), []() and [DeNS](https://github.com/atomicarchitects/equiformer).
+
+## Citation
+Please consider citing the works below if this repository is helpful:
+```
+@inproceedings{liu2025learning,
+  title={Learning 3d anisotropic noise distributions improves molecular force fields},
+  author={Liu, Xixian and Jiao, Rui and Liu, Zhiyuan and Liu, Yurou and Liu, Yang and Lu, Ziheng and Huang, Wenbing and Zhang, Yang and Cao, Yixin},
+  booktitle={The Thirty-ninth Annual Conference on Neural Information Processing Systems},
+  year={2025}
+}
+```
